@@ -176,7 +176,7 @@ void Analysis_mc::analisi(int num_histo_kin
 				   "T/H + X"};
 
   const TString eff_names[nSamples_eff +1] = {"data","Majorana1", "WZ","ZZ", "X+gamma", "triboson", "TT+X", "T/H + X", "no-prompt"};
-  const double xSections[nSamples-5]= {0.04892,
+  const double xSections[nSamples-5]= {0.4892,
 
 				       4.42965,
 

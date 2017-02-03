@@ -168,6 +168,8 @@ void plotDataVSMC(TH1D* data, TH1D** bkg, const TString* names, const unsigned n
         else signal[0]->SetMaximum(signal[0]->GetBinContent(signal[0]->GetMaximumBin())*2);
     }
 
+    data -> SetMaximum(data->  GetBinContent(bkgTot->GetMaximumBin()) * 1.3);
+    data -> SetMinimum (0.0000001);
     data->Draw("pe");	//The range used is now that of the data histogra
     bkgStack->Draw("hist same");
     data->Draw("pe same");

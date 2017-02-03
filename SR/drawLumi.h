@@ -9,7 +9,7 @@ void drawLumi(TPad*, const TString& extraText = "Preliminary", const bool data =
 
 void drawLumi(TPad* pad, const TString& extraText, const bool data){
 	TString lumiText;
-	if(data) lumiText = "36.46 fb^{-1} (13 TeV)";
+	if(data) lumiText = "36.8 fb^{-1} (13 TeV)";
 	else lumiText = "(13 TeV)";
 	//const float H = pad->GetWh();
   	//const float W = pad->GetWw();

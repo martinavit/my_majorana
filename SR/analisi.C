@@ -26,8 +26,6 @@
 #include <TClonesArray.h>
 #include <TLegendEntry.h>
 #include <TGraphAsymmErrors.h>
-#include <Analysis.h>
-#include <Analysis_signal.h>
 #include <Analysis_mc.h>
 #include <THStack.h>
 #include <TPaveText.h>

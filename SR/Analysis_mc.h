@@ -30,8 +30,6 @@
 #include <TClonesArray.h>
 #include <TLegendEntry.h>
 #include <TGraphAsymmErrors.h>
-#include <Analysis.h>
-#include <Analysis_signal.h>
 #include <THStack.h>
 
 

@@ -1092,8 +1092,8 @@ void Analysis_mc::analisi(int num_histo_kin
 
   const double HistMin[nDist] = { 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  const double HistMax[nDist] = {200, 200, 200, 200, 200,  200,  200,  200,  200,  200, 200, 100, 10,10, 100, 4,4,4,0.1,0.1,0.015,0.015, 0.015, 0.15, 0.8, 0.8, 5};
-  const int nBins[nDist] = {50, 50, 50, 50, 50, 50,50,50,50,50,50,20,10,10,20,25,25,25,50,50,50,20,20,20,20,20, 5};
+  const double HistMax[nDist] = {100, 100, 100, 200, 200,  200,  200,  100,  100,  100, 200, 100, 10,10, 100, 4,4,4,0.1,0.1,0.015,0.015, 0.015, 0.15, 0.8, 0.8, 5};
+  const int nBins[nDist] = {10, 10, 10, 50, 50, 50,50,20,20,20,50,20,10,10,20,25,25,25,50,50,50,20,20,20,20,20, 5};
 
 
   double data_sum1=0;
@@ -1459,7 +1459,7 @@ void Analysis_mc::analisi(int num_histo_kin
       //if ( !trigger_fired ) cout <<"trigger not fired"<<endl;
 
       //cout<<event_clas[0]<<"    before   3"<<endl;
-      if ( !trigger_fired ) continue;
+      if ( effsam != 1 && !trigger_fired ) continue;
       //cout<<event_clas[0]<<"   after   3"<<endl;
 
 

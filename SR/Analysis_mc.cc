@@ -1077,10 +1077,10 @@ void Analysis_mc::analisi(int num_histo_kin
   }//end for on tree
     
   //******************* HISTO **********************
-  const int nCat=9;
+  const int nCat=6;
   const int nDist = 27;  //Number of distributions to plot
   TH1D* Histos[nDist][nCat][nSamples_eff +1];
-  const TString catNames[nCat] ={"all_ossf_CR_DY", "low_ossf_CR_DY", "high_ossf_CR_DY", "all_n_ossf_CR_TTbar", "low_n_ossf_TTbar", "high_n_ossf_TTbar", "all_ossf_CR_WZ", "low_ossf_CR_WZ", "high_ossf_CR_WZ"};
+  const TString catNames[nCat] ={"all_ossf", "low_ossf", "high_ossf", "all_n_ossf", "low_n_ossf", "high_n_ossf"};
   const TString Histnames_ossf[nDist] = { "LeptonPt_le","LeptonPt_subl", "LeptonPt_tr","Sum3Pt","Sum2Pt_lt","Sum2Pt_st","Sum2Pt_ls","Mlll","Mll","Mll_pair OSSF", "MET", "MT", "NJets", "NbJets","HT", "DeltaR_pair","DeltaR_lt","DeltaR_st","RelIso_l", "RelIso_t", "dxy_l", "dxy_t","dz_l", "dz_t","3dIP_l", "3dIP_t", "flavors"};
 
   //const TString Histnames_n_ossf[nDist] = { "LeptonPt_le","LeptonPt_subl" "LeptonPt_tr","Sum3Pt","Sum2Pt_lt","Sum2Pt_st","Sum2Pt_ls","Mlll","Mll","Mll_pair NOSSF", "MET", "MT", "NJets", "NbJets","HT", "DeltaR","DeltaR_pair","DeltaR_lt","DeltaR_st","RelIso_l", "RelIso_t", "dxy_l", "dxy_t","dz_l", "dz_t","3dIP_l", "3dIP_t"};
@@ -1330,8 +1330,6 @@ void Analysis_mc::analisi(int num_histo_kin
 	if(_isT[ind[l]]) ++tightC;	
 	else break;
       }
-      //if (tightC == 3 ) cout<< "=============  "<< _flavors[ind[0]]<<","<<_flavors[ind[1]]<<","<<_flavors[ind[2]]<<" --->  "<<_passedMVA90[ind[0]]<<","<<_passedMVA90[ind[1]]<<","<<_passedMVA90[ind[2]]<<endl;
-
 
       //Check number of prompt leptons MC
       unsigned promptC = 0;
@@ -1341,10 +1339,6 @@ void Analysis_mc::analisi(int num_histo_kin
       //cout<<"before   2"<<endl;
       if (effsam != 0 && promptC != 3) continue;
       //cout<<"after   2"<<endl;
-
-      //cout<<"-----------  "<<tightC<<endl;
-      //Check if there are 3 tights
-
 
       bool tightFail = (tightC < 3);
       //if (tightFail) continue;
@@ -1363,14 +1357,11 @@ void Analysis_mc::analisi(int num_histo_kin
 	  }
 	}   
       }
-      //else if(tightFail) continue;
-      // cout<<"==== " << scal<<endl;
-      //else if(tightFail) continue;
+      
 
       if (effsam == 0 && !tightFail) data_sum1++;
       if (effsam != 0 || (effsam == 0 && tightFail)) mc_sum1 = mc_sum1 + scal;
 
-      //cout<<tightC<<"  "<<scal<< endl;
       
       // ========================================== Variables and Analysis or CR cuts
       TLorentzVector lepton_reco[3];
@@ -1431,6 +1422,20 @@ void Analysis_mc::analisi(int num_histo_kin
       
       //cout<<event_clas[0]<<endl;
       
+      
+      //********************** DELTA R MIN, MAX
+      Double_t delta_R_max=-1;
+      Double_t delta_R_min=-1;
+
+      delta_R_max = lepton_reco[0].DeltaR(lepton_reco[1]);
+      if (lepton_reco[0].DeltaR(lepton_reco[2]) > delta_R_max) delta_R_max = lepton_reco[0].DeltaR(lepton_reco[2]);
+      if (lepton_reco[1].DeltaR(lepton_reco[2]) > delta_R_max) delta_R_max = lepton_reco[1].DeltaR(lepton_reco[2]);
+
+      delta_R_min = lepton_reco[0].DeltaR(lepton_reco[1]);
+      if (lepton_reco[0].DeltaR(lepton_reco[2]) < delta_R_min) delta_R_min = lepton_reco[0].DeltaR(lepton_reco[2]);
+      if (lepton_reco[1].DeltaR(lepton_reco[2]) < delta_R_min) delta_R_min = lepton_reco[1].DeltaR(lepton_reco[2]);
+      
+       
       //************************** TRIGGER
       // 1* = eee
       // 2* = emm
@@ -1463,7 +1468,16 @@ void Analysis_mc::analisi(int num_histo_kin
       bool CR_dy=false;
       bool CR_ttbar=false;
       bool CR_wz=false;
+      bool SR=false;
       
+      if (ossf_event){
+      	if(nBjets == 0 && _met < 75 && sum_3l_rec.M() < 80  && delta_R_min > 0.05 && delta_R_max > 2 ) SR = true;	
+      }
+      if (!ossf_event){
+      	if(nBjets == 0 && _met < 75 && sum_3l_rec.M() < 80  ) SR = true;
+	event_clas[0] = event_clas[0] *0.1;
+      }
+         
       if (ossf_event){
 	if(nBjets == 0 && _met < 30 && m_T < 30 && (fabs(sum_2l_rec_pair.M() - 91.1876) < 15) ) CR_dy = true;
 	if(nBjets == 0 && _met > 30 && m_T > 50 && (fabs(sum_2l_rec_pair.M() - 91.1876) < 15) ){
@@ -1514,7 +1528,7 @@ void Analysis_mc::analisi(int num_histo_kin
      
 
       //************************** OSSF ***********************************
-      if(CR_dy){
+      if (ossf_event && SR){
 	for(int numero_histo = 0; numero_histo < nDist; ++numero_histo){
 	  Histos[numero_histo][0][fill]->Fill(TMath::Min(values[numero_histo], maxBinC[numero_histo]), scal);
 	  if (low_pt_event)Histos[numero_histo][1][fill]->Fill(TMath::Min(values[numero_histo], maxBinC[numero_histo]), scal);       
@@ -1527,7 +1541,7 @@ void Analysis_mc::analisi(int num_histo_kin
 	}//end for
       }//end ossf
       //************************** NOSSF ***********************************
-      if(CR_ttbar){
+     if (!ossf_event && SR){
 	for(int numero_histo = 0; numero_histo < nDist; ++numero_histo){
 	  Histos[numero_histo][3][fill]->Fill(TMath::Min(values[numero_histo], maxBinC[numero_histo]), scal);
 	  if (low_pt_event)Histos[numero_histo][4][fill]->Fill(TMath::Min(values[numero_histo], maxBinC[numero_histo]), scal);       
@@ -1539,21 +1553,7 @@ void Analysis_mc::analisi(int num_histo_kin
 	  }
 	}//end for
       }//end n_ossf
-       //************************** OSSF ***********************************
-      if(CR_wz){
-	for(int numero_histo = 0; numero_histo < nDist; ++numero_histo){
-	  Histos[numero_histo][6][fill]->Fill(TMath::Min(values[numero_histo], maxBinC[numero_histo]), scal);
-	  if (low_pt_event)Histos[numero_histo][7][fill]->Fill(TMath::Min(values[numero_histo], maxBinC[numero_histo]), scal);       
-	  if (high_pt_event) Histos[numero_histo][8][fill]->Fill(TMath::Min(values[numero_histo], maxBinC[numero_histo]), scal);
-	  
-	  if (numero_histo == 26){
-	    Histos[numero_histo][6][fill]->Fill(TMath::Min(0., maxBinC[numero_histo]), scal);
-	    if (low_pt_event)Histos[numero_histo][7][fill]->Fill(TMath::Min(0., maxBinC[numero_histo]), scal);       
-	    if (high_pt_event) Histos[numero_histo][8][fill]->Fill(TMath::Min(0., maxBinC[numero_histo]), scal);
-	  }
-
-	}//end for
-      }//end n_ossf
+  
     }
   }
 
@@ -1564,7 +1564,7 @@ void Analysis_mc::analisi(int num_histo_kin
   TH1D* dataYields[nDist][nCat];
   for(unsigned dist = 0; dist < nDist; ++dist){
     for(unsigned cat = 0; cat < nCat; ++cat){
-      dataYields[dist][cat] = (TH1D*) Histos[dist][cat][0]->Clone();
+      dataYields[dist][cat] = (TH1D*) Histos[dist][cat][2]->Clone();
     }
   }
   TH1D* bkgYields[nDist][nCat][nSamples_eff -1]; //change to nSamples_eff if sig is removed
@@ -1573,7 +1573,7 @@ void Analysis_mc::analisi(int num_histo_kin
       for(unsigned effsam1 = 2; effsam1 < nSamples_eff + 1; ++effsam1){
 	bkgYields[dist][cat][effsam1 -2] = (TH1D*) Histos[dist][cat][effsam1]->Clone();
 	if(effsam1 > 2){
-	  // dataYields[dist][cat]->Add(bkgYields[dist][cat][effsam1 -2]);
+	  dataYields[dist][cat]->Add(bkgYields[dist][cat][effsam1 -2]);
 	}
       }
     }
